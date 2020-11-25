@@ -1,0 +1,4 @@
+family	sample_id	tissue	gender	phenotype	stranded
+115	115-i-1a	blood	male	affected	yes
+115	115-ii-1u	blood	male	unaffected	yes
+115	115-ii-2u	blood	female	unaffected	yes

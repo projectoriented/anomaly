@@ -1,0 +1,21 @@
+"""Rules for analysing fastq files with FastQC."""
+
+__author__ = "Mei Wu"
+
+import glob, os
+configfile: "configs/config.yaml"
+
+sample=os.path.basename(glob.glob(fastq_dir + "*")[0][:-11])
+
+rule fastqc:
+    input:
+        forward = fastq_dir + "{sample}_1.fastq.gz",
+        reverse = fastq_dir + "{sample}_2.fastq.gz"
+    output:
+        qc_forward = fastqc_dir + "{sample}_1.fastqc.html",
+        qc_reverse = fastqc_dir + "{sample}_2.fastqc.html"
+    params:
+        fastqc_dir = fastqc_dir
+    shell:
+        "fastqc {input.forward} --threads 2 --outdir {params.fastqc_dir};"
+        "fastqc {input.reverse} --threads 2 --outdir {params.fastqc_dir};"
