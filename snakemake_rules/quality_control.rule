@@ -1,21 +1,20 @@
 """Rules for analysing fastq files with FastQC."""
 
-__author__ = "Mei Wu"
-
 import glob, os
 configfile: "configs/config.yaml"
 
-sample=os.path.basename(glob.glob(fastq_dir + "*")[0][:-11])
+fastq_dir = config["fastq_dir"]
+fastqc_dir = config["fastqc_dir"]
+
+samples=os.path.basename(glob.glob(fastq_dir + "*")[0][:-11])
 
 rule fastqc:
     input:
-        forward = fastq_dir + "{sample}_1.fastq.gz",
-        reverse = fastq_dir + "{sample}_2.fastq.gz"
+        read1 = expand(fastq_dir + "{sample}_1.fastq.gz", sample = samples),
+        read2 = expand(fastq_dir + "{sample}_2.fastq.gz", sample = samples)
     output:
-        qc_forward = fastqc_dir + "{sample}_1.fastqc.html",
-        qc_reverse = fastqc_dir + "{sample}_2.fastqc.html"
-    params:
-        fastqc_dir = fastqc_dir
+        qc_read1 = expand(fastqc_dir + "{sample}_1.fastqc.zip", sample = samples),
+        qc_read2 = expand(fastqc_dir + "{sample}_2.fastqc.zip", sample = samples)
     shell:
-        "fastqc {input.forward} --threads 2 --outdir {params.fastqc_dir};"
-        "fastqc {input.reverse} --threads 2 --outdir {params.fastqc_dir};"
+        "fastqc --threads 2 --outdir {fastqc_dir} {input.read1};"
+        "fastqc --threads 2 --outdir {fastqc_dir} {input.read2};"

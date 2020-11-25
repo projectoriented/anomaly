@@ -1,4 +1,4 @@
 #metafile: configs/metadata.tsv
 
-fastq_dir: /home/mei.wu/rna-seq/data/samples/115/115-I-1A/fastq/
-fastqc_dir: /home/mei.wu/rna-seq/anomaly/analyses/preprocessing/fastqc/
+fastq_dir: /home/proj/development/rare-disease/rna_data/115/115-I-1A/fastq/
+fastqc_dir: /home/mei.wu/rna-seq/fastqc/
