@@ -1,0 +1,39 @@
+# need to figure out a way to pass files here.
+configfile: "../configs/config.yaml"
+
+rule end:
+    input:
+        pass
+
+rule index:
+    input:
+         fa = config["genome"],
+         gtf = config["gtf"]
+    output:
+         directory(config["output_dir"] + "/star_index/")
+    threads: 36
+    shell:
+         'mkdir {output} &&'
+         'STAR --runThreadN {threads} '
+         '--runMode genomeGenerate '
+         '--genomeFastaFiles {input.fa} '
+         '--sjdbGTFfile {input.gtf} '
+         '--sjdbOverhang 100'
+
+rule pass_1:
+    input:
+        read1 = "/output/{sample}/{sample}_1_trimmed.fq.gz",
+        read2 = "/output/{sample}/{sample}_2_trimmed.fq.gz",
+        ref_dir = directory(config["output_dir"] + "/star_index/")
+    output:
+        "/output/{sample}/star/pass_1/SJ.out.tab"
+    params:
+        out_dir = "/output/{sample}/star/pass_1/",
+        rm_bam = "/output/{sample}/star/pass_1/Aligned.out.bam"
+    threads: 36
+    shell:
+         ""
+
+rule pass_2:
+    input:
+
