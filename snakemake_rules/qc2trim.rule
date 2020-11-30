@@ -1,0 +1,33 @@
+configfile: "/home/mei.wu/rna-seq/config/config.yaml"
+
+rule all:
+    input:
+        expand(config["output_dir"] + "/output/{sample}/fastqc/{sample}_{read}_fastqc.zip", sample=config["read1"], read=["1","2"]),
+        expand(config["output_dir"] + "/output/{sample}/trim-galore/{sample}_{read}_val_{read}.fq.gz", sample=config["read1"], read=["1","2"]),
+
+rule fastqc:
+    input:
+        read1 = lambda wildcards: config["read1"][wildcards.sample],
+        read2 = lambda wildcards: config["read2"][wildcards.sample]
+    output:
+        qc_read1 = config["output_dir"] + "/output/{sample}/fastqc/{sample}_1_fastqc.zip",
+        qc_read2 = config["output_dir"] + "/output/{sample}/fastqc/{sample}_2_fastqc.zip"
+    params:
+        tmp_dir = config["tmp_dir"],
+        outpath = config["output_dir"] + "/output/{sample}/fastqc/"
+    threads: 4
+    shell:
+        "fastqc --threads {threads} --noextract --dir {params.tmp_dir} --outdir {params.outpath} {input.read1};"
+        "fastqc --threads {threads} --noextract --dir {params.tmp_dir} --outdir {params.outpath} {input.read2};"
+
+rule trim_galore_pe:
+    input:
+        read1 = lambda wildcards: config["read1"][wildcards.sample],
+        read2 = lambda wildcards: config["read2"][wildcards.sample]
+    output:
+        trimmed_1 = config["output_dir"] + "/output/{sample}/trim-galore/{sample}_1_val_1.fq.gz",
+        trimmed_2 = config["output_dir"] + "/output/{sample}/trim-galore/{sample}_2_val_2.fq.gz"
+    params:
+        outpath = config["output_dir"] + "/output/{sample}/trim-galore/"
+    shell:
+         "trim_galore --cores 4 --fastqc --gzip --output_dir {params.outpath} --paired {input.read1} {input.read2}"
