@@ -1,4 +1,20 @@
-#metafile: configs/metadata.tsv
+# The common directory for raw data
+#fastq: /home/proj/development/rare-disease/rna_data/
 
-fastq_dir: /home/proj/development/rare-disease/rna_data/115/115-I-1A/fastq/
-fastqc_dir: /home/mei.wu/rna-seq/fastqc/
+# A temporary output directory
+tmp_dir: /home/mei.wu/tmp
+
+# The real output directory
+output_dir: /home/mei.wu/rna-seq/output
+
+# Human genome reference build, GRCh38/hg38
+genome: /home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta
+
+# GTF file
+gtf: /home/proj/development/rare-disease/references_9.0/grch38_gencode_annotation_-v34-.gtf
+
+read1:
+    1_190129_HHGYWDSXX_115-I-1A_S10: /home/proj/development/rare-disease/rna_data/115/115-I-1A/fastq/1_190129_HHGYWDSXX_115-I-1A_S10_1.fastq.gz
+
+read2:
+    1_190129_HHGYWDSXX_115-I-1A_S10: /home/proj/development/rare-disease/rna_data/115/115-I-1A/fastq/1_190129_HHGYWDSXX_115-I-1A_S10_2.fastq.gz
