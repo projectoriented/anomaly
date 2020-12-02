@@ -1,10 +1,7 @@
-# The common directory for raw data
-#fastq: /home/proj/development/rare-disease/rna_data/
-
-# A temporary output directory
+# Temp directory
 tmp_dir: /home/mei.wu/tmp
 
-# The real output directory
+# The output directory
 output_dir: /home/mei.wu/rna-seq/output
 
 # Human genome reference build, GRCh38/hg38
