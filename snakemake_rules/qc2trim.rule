@@ -2,8 +2,7 @@ configfile: "/home/mei.wu/rna-seq/config/config.yaml"
 
 rule all:
     input:
-        expand(config["output_dir"] + "/output/{sample}/fastqc/{sample}_{read}_fastqc.zip", sample=config["read1"], read=["1","2"]),
-        expand(config["output_dir"] + "/output/{sample}/trim-galore/{sample}_{read}_val_{read}.fq.gz", sample=config["read1"], read=["1","2"]),
+        expand(config["output_dir"] + "/output/{sample}/multiqc/qc2trim_report.html", sample=config["read1"])
 
 rule fastqc:
     input:
@@ -30,4 +29,18 @@ rule trim_galore_pe:
     params:
         outpath = config["output_dir"] + "/output/{sample}/trim-galore/"
     shell:
-         "trim_galore --cores 4 --fastqc --gzip --output_dir {params.outpath} --paired {input.read1} {input.read2}"
+         "trim_galore --cores 8 --fastqc --gzip --output_dir {params.outpath} --paired {input.read1} {input.read2}"
+
+rule summary:
+    input:
+        qc_read1 = config["output_dir"] + "/output/{sample}/fastqc/{sample}_1_fastqc.zip",
+        qc_read2 = config["output_dir"] + "/output/{sample}/fastqc/{sample}_2_fastqc.zip",
+        trimmed_1 = config["output_dir"] + "/output/{sample}/trim-galore/{sample}_1_val_1.fq.gz",
+        trimmed_2 = config["output_dir"] + "/output/{sample}/trim-galore/{sample}_2_val_2.fq.gz"
+    output:
+        config["output_dir"] + "/output/{sample}/multiqc/qc2trim_report.html"
+    params:
+        outpath = config["output_dir"] + "/output/{sample}/"
+    threads: 1
+    shell:
+         "multiqc {params.outpath} --filename {output}"
