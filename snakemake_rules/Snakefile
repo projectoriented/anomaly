@@ -34,7 +34,7 @@ rule trim_galore_pe:
     params:
         outpath = COMMON_DIR + "/{sample}/trim-galore/"
     shell:
-         "trim_galore --cores 15 --fastqc --gzip --output_dir {params.outpath} --paired {input.read1} {input.read2}"
+         "trim_galore --cores 8 --fastqc --gzip --output_dir {params.outpath} --paired {input.read1} {input.read2}"
 
 rule star_index:
     input:
