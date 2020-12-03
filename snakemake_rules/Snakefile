@@ -65,7 +65,7 @@ rule star_align:
         COMMON_DIR + "/{sample}/star_aln/logs/{sample}.log",
     threads: 36
     shell:
-        "STAR --genomeDIR {input.ref_dir} "
+        "STAR --genomeDir {input.ref_dir} "
         "--readFilesin {input.trimmed_1} {input.trimmed_2} "
         "--readFilesCommand zcat "        
         "--twopassMode Basic "
