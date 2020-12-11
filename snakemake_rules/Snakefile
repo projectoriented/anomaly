@@ -1,12 +1,16 @@
 configfile: "/home/mei.wu/rna-seq/config/config.yaml"
 
 COMMON_DIR = config["output_dir"]
-
+TMP_DIR = config["tmp_dir"]
 
 rule end:
     input:
+        expand(COMMON_DIR + "/{sample}/trim-galore/{sample}_{num}_val_{num}.fq.gz", sample=config["read1"], num=["1","2"]),
         COMMON_DIR + "/star_index/",
-        expand(COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam.bai", sample=config["read1"]),
+        expand(COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptomeSorted.out.bam", sample=config["read1"]),
+        expand(COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.{f}.out.bam.bai", sample=config["read1"], f=["sortedByCoord","toTranscriptomeSorted"]),
+        expand(COMMON_DIR + "/{sample}/picard_markdupe/{sample}.Aligned.toTranscriptomeSorted.bam", sample=config["read1"]),
+        COMMON_DIR + "/rsem_index/",
         expand(COMMON_DIR + "/{sample}/multiqc/report.html", sample=config["read1"]),
 
 rule fastqc:
@@ -17,24 +21,28 @@ rule fastqc:
         qc_read1 = COMMON_DIR + "/{sample}/fastqc/{sample}_1_fastqc.zip",
         qc_read2 = COMMON_DIR + "/{sample}/fastqc/{sample}_2_fastqc.zip"
     params:
-        tmp_dir = config["tmp_dir"],
-        outpath = COMMON_DIR + "/{sample}/fastqc/"
-    threads: 15
+        tmp_dir = TMP_DIR,
+        outpath = COMMON_DIR + "/{sample}/fastqc/",
+        job_name = "fastqc_{sample}_MW"
     shell:
-        "fastqc --threads {threads} --noextract --dir {params.tmp_dir} --outdir {params.outpath} {input.read1};"
-        "fastqc --threads {threads} --noextract --dir {params.tmp_dir} --outdir {params.outpath} {input.read2};"
+        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) &&"
+        "fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input.read1};"
+        "fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input.read2};"
 
 rule trim_galore_pe:
     input:
         read1 = lambda wildcards: config["read1"][wildcards.sample],
         read2 = lambda wildcards: config["read2"][wildcards.sample]
     output:
-        trimmed_1 = COMMON_DIR + "/{sample}/trim-galore/{sample}_1_val_1.fq.gz",
-        trimmed_2 = COMMON_DIR + "/{sample}/trim-galore/{sample}_2_val_2.fq.gz"
+        trimmed_1 = temp(COMMON_DIR + "/{sample}/trim-galore/{sample}_1_val_1.fq.gz"),
+        trimmed_2 = temp(COMMON_DIR + "/{sample}/trim-galore/{sample}_2_val_2.fq.gz")
     params:
-        outpath = COMMON_DIR + "/{sample}/trim-galore/"
+        outpath = COMMON_DIR + "/{sample}/trim-galore/",
+        job_name = "trimgalore_{sample}_MW",
+    resources:
+        cores=9,
     shell:
-         "trim_galore --cores 8 --fastqc --gzip --output_dir {params.outpath} --paired {input.read1} {input.read2}"
+         "trim_galore --cores {resources.cores} --fastqc --gzip --output_dir {params.outpath} --paired {input.read1} {input.read2}"
 
 rule star_index:
     input:
@@ -42,11 +50,12 @@ rule star_index:
          gtf = config["gtf"]
     output:
          directory(COMMON_DIR + "/star_index/")
-    threads: 36
+    resources:
+        cores=18,
     shell:
-         'STAR --runThreadN {threads} '
+         'STAR --runThreadN {resources.cores} '
          '--runMode genomeGenerate '
-         '--genomeDir {output}'
+         '--genomeDir {output} '
          '--genomeFastaFiles {input.fa} '
          '--sjdbGTFfile {input.gtf} '
          '--sjdbOverhang 99'
@@ -58,77 +67,139 @@ rule star_align:
         ref_dir = COMMON_DIR + "/star_index/"
     output:
         COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam",
-        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptome.out.bam"
+        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptome.out.bam",
+        COMMON_DIR + "/{sample}/star_aln/{sample}.Log.final.out"
     params:
-        prefix = COMMON_DIR + "/{sample}/star_aln/{sample}."
+        prefix = COMMON_DIR + "/{sample}/star_aln/{sample}.",
+        job_name = "star_{sample}_MW"
     log:
-        COMMON_DIR + "/{sample}/star_aln/logs/{sample}.log",
-    threads: 36
+        COMMON_DIR + "/{sample}/star_aln/logs/{sample}-star.log",
+    resources:
+        cores=18,
+        mem_mb=75000,
+        time_min=480,
     shell:
         "STAR --genomeDir {input.ref_dir} "
-        "--readFilesin {input.trimmed_1} {input.trimmed_2} "
+        "--readFilesIn {input.trimmed_1} {input.trimmed_2} "
         "--readFilesCommand zcat "        
         "--twopassMode Basic "
         "--quantMode TranscriptomeSAM " # using RSEM
         "--peOverlapNbasesMin 10 "
         "--outSAMtype BAM SortedByCoordinate "
         "--outFileNamePrefix {params.prefix} "
-        "--runThreadN {threads}"
+        "--runThreadN {resources.cores}"
 
 
 # rule rename_bam: # I will add this rule .. later to comply w/ conventions ^_^
 
-rule mark_dupes:
+rule samtools_sort:
     input:
-        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam"
+        transcript = COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptome.out.bam"
     output:
-        bam=COMMON_DIR + "/{sample}/picard_markdupe/{sample}.bam",
-        metrics=COMMON_DIR + "/{sample}/picard_markdupe/{sample}.metrics.txt"
-    log:
-        COMMON_DIR + "/{sample}/logs/{sample}.log"
+        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptomeSorted.out.bam",
     params:
-        "REMOVE_DUPLICATES=true"
-    wrapper:
-        "0.68.0/bio/picard/markduplicates"
+        tmp_dir = TMP_DIR,
+        job_name = "samsort_{sample}_MW",
+    resources:
+        cores=18,
+        mem_mb=75000,
+        time_min=480,
+    shell:
+        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) &&" 
+        "samtools sort -T ${{tmpdir}} "
+        "--threads {resources.cores} "
+        "-O bam {input.transcript} > {output}"
 
 rule samtools_index:
     input:
-        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam"
+        coord = COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam",
+        transcript = COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptomeSorted.out.bam"
     output:
-        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam.bai"
-    wrapper:
-        "0.68.0/bio/samtools/index"
+        coord_bai = COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam.bai",
+        transcript_bai = COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptomeSorted.out.bam.bai"
+    params:
+        job_name = "samindex_{sample}_MW",
+    resources:
+        cores=9,
+    shell:
+        "samtools index -b -@ {resources.cores} {input.coord};"
+        "samtools index -b -@ {resources.cores} {input.transcript};"
+
+rule mark_dupes:
+    input:
+        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptomeSorted.out.bam"
+    output:
+        bam=COMMON_DIR + "/{sample}/picard_markdupe/{sample}.Aligned.toTranscriptomeSorted.bam",
+        metrics=COMMON_DIR + "/{sample}/picard_markdupe/{sample}.Aligned.toTranscriptomeSorted.metrics.txt"
+    log:
+        COMMON_DIR + "/{sample}/logs/{sample}-mdupe.log"
+    params:
+        tmp_dir = TMP_DIR,
+        job_name = "mdupe_{sample}_MW",
+    resources:
+        cores=18,
+        mem_mb=75000,
+        time_min=180,
+    shell:
+        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) &&"
+        "java -jar /home/proj/bin/conda/envs/D_rna-seq_MW/share/picard-2.22.1-0/picard.jar MarkDuplicates "
+        "I={input} "
+        "O={output.bam} "
+        "M={output.metrics} "
+        "REMOVE_DUPLICATES=true "
+        "TMP_DIR=${{tmpdir}}"
+
+rule rsem_index:
+    input:
+         fa = config["genome"],
+         gtf = config["gtf"]
+    output:
+         directory(COMMON_DIR + "/rsem_index/")
+    resources:
+        cores=9,
+    params:
+        job_name = "rsem_index_hg38_MW",
+        prefix = COMMON_DIR + "/rsem_index/hg38"
+    shell:
+        'rsem-prepare-reference --num-threads {resources.cores} '
+        '--gtf {input.gtf} '
+        '{input.fa} '
+        '{params.prefix}'
 
 rule rsem:
     input:
-        COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptome.out.bam",
+        star_aln=COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.toTranscriptome.out.bam",
+        ref_dir=COMMON_DIR + "/rsem_index/"
     output:
-        COMMON_DIR + "/{sample}/rsem/{sample}.transcript.bam",
+        COMMON_DIR + "/{sample}/rsem/{sample}.stat/{sample}.cnt",
     params:
-        prefix = "COMMON_DIR + /{sample}/rsem/{sample}"
-    threads: 36
+        prefix = COMMON_DIR + "/{sample}/rsem/{sample}",
+        job_name = "rsem_{sample}_MW",
+        ref_prefix = COMMON_DIR + "/rsem_index/hg38"
+    resources:
+        cores=18,
+        mem_mb=75000,
+        time_min=480,
     shell:
         "rsem-calculate-expression "
-        "--star "
-        "--num-threads {threads} "
-        "--alignments {input} "
-        "COMMON_DIR + /star_index/ " # path to the genome index generated by STAR
+        "--paired-end "
+        "--bam "
+        "--num-threads {resources.cores} "        
+        "{input.star_aln} "
+        "{params.ref_prefix} "
         "{params.prefix}"
 
 rule summary:
     input:
         qc_read1 = COMMON_DIR + "/{sample}/fastqc/{sample}_1_fastqc.zip",
         qc_read2 = COMMON_DIR + "/{sample}/fastqc/{sample}_2_fastqc.zip",
-        trimmed_1 = COMMON_DIR + "/{sample}/trim-galore/{sample}_1_val_1.fq.gz",
-        trimmed_2 = COMMON_DIR + "/{sample}/trim-galore/{sample}_2_val_2.fq.gz",
-        star_aln=COMMON_DIR + "/{sample}/star_aln/{sample}.Aligned.sortedByCoord.out.bam",
-        bam=COMMON_DIR + "/{sample}/picard_markdupe/{sample}.bam",
-        metrics=COMMON_DIR + "/{sample}/picard_markdupe/{sample}.metrics.txt",
-        rsem=COMMON_DIR + "/{sample}/rsem/{sample}.transcript.bam",
+        star_aln = COMMON_DIR + "/{sample}/star_aln/{sample}.Log.final.out",
+        metrics=COMMON_DIR + "/{sample}/picard_markdupe/{sample}.Aligned.toTranscriptomeSorted.metrics.txt",
+        rsem=COMMON_DIR + "/{sample}/rsem/{sample}.stat/{sample}.cnt",
     output:
         COMMON_DIR + "/{sample}/multiqc/report.html"
     params:
-        inpath = COMMON_DIR + "/{sample}/"
-    threads: 1
+        inpath = COMMON_DIR + "/{sample}/",
+        job_name = "summary_{sample}_MW",
     shell:
          "multiqc {params.inpath} --filename {output}"
