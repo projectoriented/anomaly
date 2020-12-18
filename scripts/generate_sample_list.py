@@ -2,7 +2,8 @@ from os import walk, path
 from sys import argv
 
 """
-This python script takes 1 argument from the command-line which is the common directory of all Fastq files. The output is a tabular file of sample names, lane, path of fq1, and fq2. 
+This python script takes 1 argument from the command-line which is the common directory of all Fastq files. 
+The output is a tabular file of sample names, lane, path of fq1, and fq2. 
 """
 def get_fastq_path(common_dir):
     file_paths = []
