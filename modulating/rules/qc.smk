@@ -5,19 +5,19 @@ rule fastqc:
     input:
         get_fastq
     output:
-        html="output/{sample}/fastqc/{lane}_{sample}_{sample_number}.html",
-        zip="output/{sample}/fastqc/{lane}_{sample}_{sample_number}.zip",
+        html=out + "/{sample}/fastqc/{lane}_{sample}_{sample_number}.html",
+        zip=out + "/{sample}/fastqc/{lane}_{sample}_{sample_number}.zip",
     params:
         tmp_dir=tmp,
         outpath=out + "/{sample}/fastqc/",
-        job_name="fastqc_{sample}_MW"
+        job_name="fastqc_{lane}_{sample}_{sample_number}"
     shell:
         "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) && "
         "fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input};"
 
 rule multiqc:
     input:
-        expand(["output/{s.sample}/fastqc/{s.lane}_{s.sample}_{s.sample_number}.zip"], s=samples.itertuples())
+        expand([out + "/{s.sample}/fastqc/{s.lane}_{s.sample}_{s.sample_number}.zip"], s=samples.itertuples())
     output:
         out + "/multiqc_report.html"
     params:

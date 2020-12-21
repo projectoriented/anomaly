@@ -1,11 +1,17 @@
 include: "rules/common.smk"
 
+
 # -------- Target Rules -------- #
 
 rule all:
     input:
          config["common_out"] + "/multiqc_report.html"
 
-# -------- Modules -------- #
+
+# -------- Setup Singularity -------- #
+# singularity:
+
+
+# -------- Load Rules -------- #
 
 include: "rules/qc.smk"
