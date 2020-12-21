@@ -1,0 +1,11 @@
+include: "rules/common.smk"
+
+# -------- Target Rules -------- #
+
+rule all:
+    input:
+         config["common_out"] + "/multiqc_report.html"
+
+# -------- Modules -------- #
+
+include: "rules/qc.smk"
