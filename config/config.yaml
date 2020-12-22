@@ -1,0 +1,12 @@
+samples: samples.tsv
+#metadata: metadata.tsv
+
+tmp: /home/mei.wu/tmp
+common_out: 
+script_dir: 
+
+# Human genome reference build, GRCh38/hg38
+genome: /home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta
+
+# GTF file
+gtf: /home/proj/development/rare-disease/references_9.0/grch38_gencode_annotation_-v34-.gtf
