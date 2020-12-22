@@ -43,7 +43,7 @@ rule star_align:
         "--outSAMattrRGline {params.rg} "
         "--runThreadN {resources.cores} && "
         "samtools index -b -@ {resources.cores} {output.genomic}; "
-        "samtools index -b -@ {resources.cores} {output.transcipts};"
+        # "samtools index -b -@ {resources.cores} {output.transcipts};"
 
 rule mark_dupes:
     input:
