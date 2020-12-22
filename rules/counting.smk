@@ -7,13 +7,14 @@ rule rsem_index:
     resources:
         cores=9,
     params:
-        job_name = "rsem_index_hg38",
-        prefix = out + "/rsem_index/hg38"
+        job_name="rsem_index_hg38",
+        prefix=out + "/rsem_index/hg38"
     shell:
-        'rsem-prepare-reference --num-threads {resources.cores} '
-        '--gtf {input.gtf} '
-        '{input.fa} '
-        '{params.prefix}'
+        "mkdir {output} && "
+        "rsem-prepare-reference --num-threads {resources.cores} " 
+        "--gtf {input.gtf} "
+        "{input.fa} "
+        "{params.prefix}"
 
 rule rsem:
     input:
@@ -24,7 +25,7 @@ rule rsem:
     params:
         prefix=out + "/{sample}/rsem/{lane}_{sample}_{sample_number}",
         job_name="rsem_{lane}_{sample}_{sample_number}",
-        ref_prefix=out + "/rsem_index/hg38"
+        # ref_prefix=out + "/rsem_index/hg38"
     resources:
         cores=18,
         mem_mb=90000,
@@ -35,5 +36,5 @@ rule rsem:
         "--bam "
         "--num-threads {resources.cores} "        
         "{input.star_aln} "
-        "{params.ref_prefix} "
+        "{input.ref_dir} "
         "{params.prefix}"

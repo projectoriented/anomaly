@@ -7,12 +7,13 @@ rule star_index:
     resources:
         cores=18,
     shell:
-         'STAR --runThreadN {resources.cores} '
-         '--runMode genomeGenerate '
-         '--genomeDir {output} '
-         '--genomeFastaFiles {input.fa} '
-         '--sjdbGTFfile {input.gtf} '
-         '--sjdbOverhang 99'
+         "mkdir {output} && "
+         "STAR --runThreadN {resources.cores} " 
+         "--runMode genomeGenerate "
+         "--genomeDir {output} "
+         "--genomeFastaFiles {input.fa} "
+         "--sjdbGTFfile {input.gtf} "
+         "--sjdbOverhang 99"
 
 rule star_align:
     input:
