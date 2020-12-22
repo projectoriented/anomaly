@@ -32,7 +32,7 @@ rule star_align:
         time_min=480,
     shell:
         "STAR --genomeDir {input.ref_dir} "
-        "--readFilesIn {input.reads}"
+        "--readFilesIn {input.reads} "
         "--readFilesCommand zcat "        
         "--twopassMode Basic "
         "--quantMode TranscriptomeSAM " # for RSEM
