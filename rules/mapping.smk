@@ -7,12 +7,13 @@ rule star_index:
     resources:
         cores=18,
     shell:
-         'STAR --runThreadN {resources.cores} '
-         '--runMode genomeGenerate '
-         '--genomeDir {output} '
-         '--genomeFastaFiles {input.fa} '
-         '--sjdbGTFfile {input.gtf} '
-         '--sjdbOverhang 99'
+         "mkdir {output} && "
+         "STAR --runThreadN {resources.cores} " 
+         "--runMode genomeGenerate "
+         "--genomeDir {output} "
+         "--genomeFastaFiles {input.fa} "
+         "--sjdbGTFfile {input.gtf} "
+         "--sjdbOverhang 99"
 
 rule star_align:
     input:
@@ -32,7 +33,7 @@ rule star_align:
         time_min=480,
     shell:
         "STAR --genomeDir {input.ref_dir} "
-        "--readFilesIn {input.reads}"
+        "--readFilesIn {input.reads} "
         "--readFilesCommand zcat "        
         "--twopassMode Basic "
         "--quantMode TranscriptomeSAM " # for RSEM
@@ -42,7 +43,7 @@ rule star_align:
         "--outSAMattrRGline {params.rg} "
         "--runThreadN {resources.cores} && "
         "samtools index -b -@ {resources.cores} {output.genomic}; "
-        "samtools index -b -@ {resources.cores} {output.transcipts};"
+        # "samtools index -b -@ {resources.cores} {output.transcipts};"
 
 rule mark_dupes:
     input:

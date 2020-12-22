@@ -7,18 +7,18 @@ rule rsem_index:
     resources:
         cores=9,
     params:
-        job_name = "rsem_index_hg38",
-        prefix = out + "/rsem_index/hg38"
+        job_name="rsem_index_hg38",
+        prefix=out + "/rsem_index/hg38"
     shell:
-        'rsem-prepare-reference --num-threads {resources.cores} '
-        '--gtf {input.gtf} '
-        '{input.fa} '
-        '{params.prefix}'
+        "mkdir {output} && "
+        "rsem-prepare-reference --num-threads {resources.cores} " 
+        "--gtf {input.gtf} "
+        "{input.fa} "
+        "{params.prefix}"
 
 rule rsem:
     input:
         star_aln=out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.Aligned.toTranscriptome.out.bam",
-        ref_dir=out + "/rsem_index"
     output:
         out + "/{sample}/rsem/{lane}_{sample}_{sample_number}.stat/{lane}_{sample}_{sample_number}.cnt",
     params:
