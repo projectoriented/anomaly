@@ -24,7 +24,7 @@ rule rsem:
     params:
         prefix=out + "/{sample}/rsem/{lane}_{sample}_{sample_number}",
         job_name="rsem_{lane}_{sample}_{sample_number}",
-        # ref_prefix=out + "/rsem_index/hg38"
+        ref_prefix=out + "/rsem_index/hg38"
     resources:
         cores=18,
         mem_mb=90000,
@@ -35,5 +35,5 @@ rule rsem:
         "--bam "
         "--num-threads {resources.cores} "        
         "{input.star_aln} "
-        "{input.ref_dir} "
+        "{params.ref_prefix} "
         "{params.prefix}"
