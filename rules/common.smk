@@ -1,8 +1,9 @@
 import pandas as pd
 
+# report: "report/workflow.rst"
 
 # -------- Config file and sample sheets --------#
-configfile: "config/config.yaml"
+configfile: "config.yaml"
 
 samples = pd.read_table(config["samples"], dtype=str).set_index(["sample", "lane", "sample_number"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
