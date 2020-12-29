@@ -7,7 +7,7 @@ rule star_index:
     resources:
         cores=18,
         mem_mb=90000,
-        time_min=120,
+        time_min=45,
     params:
         job_name="star_index",
     benchmark:
@@ -38,7 +38,7 @@ rule star_align:
     resources:
         cores=18,
         mem_mb=90000,
-        time_min=480,
+        time_min=180,
     shell:
         "STAR --genomeDir {input.ref_dir} "
         "--readFilesIn {input.reads} "
