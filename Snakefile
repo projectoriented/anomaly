@@ -4,6 +4,8 @@ include: "rules/common.smk"
 # -------- Target Rules -------- #
 
 rule all:
+    params:
+        job_name="localrule-target_all",
     input:
          out + "/multiqc_report.html",
          out + "/star_index",

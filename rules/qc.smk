@@ -15,7 +15,7 @@ rule fastqc:
     shell:
         "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) && "
         "fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input} && "
-        "{params.script_dir}/rename_files.sh {params.outpath} fastqc {params.capture_group}"
+        "{params.script_dir}/rename_files.sh {params.outpath} fastqc {wildcards.lane} {params.capture_group}"
 
 rule multiqc:
     input:

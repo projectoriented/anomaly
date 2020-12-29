@@ -21,5 +21,5 @@ rule trim_galore_pe:
          "--gzip "
          "--output_dir {params.outpath} "
          "--paired {input} && "
-         "{params.script_dir}/rename_files.sh {params.outpath} trimming_report {params.capture_group}"
+         "{params.script_dir}/rename_files.sh {params.outpath} trimming_report {wildcards.lane} {params.capture_group}"
 

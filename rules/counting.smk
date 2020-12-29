@@ -18,9 +18,10 @@ rule rsem_index:
 
 rule rsem:
     input:
+        index=out + "/rsem_index",
         star_aln=out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.Aligned.toTranscriptome.out.bam",
     output:
-        out + "/{sample}/rsem/{lane}_{sample}_{sample_number}.stat/{lane}_{sample}_{sample_number}.cnt",
+        report(out + "/{sample}/rsem/{lane}_{sample}_{sample_number}.stat/{lane}_{sample}_{sample_number}.cnt")
     params:
         prefix=out + "/{sample}/rsem/{lane}_{sample}_{sample_number}",
         job_name="rsem_{lane}_{sample}_{sample_number}",

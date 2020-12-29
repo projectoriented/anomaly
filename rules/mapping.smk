@@ -6,6 +6,8 @@ rule star_index:
          directory(out + "/star_index")
     resources:
         cores=18,
+    params:
+        job_name="star_index",
     shell:
          "mkdir {output} && "
          "STAR --runThreadN {resources.cores} " 
