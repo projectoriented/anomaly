@@ -1,5 +1,6 @@
 import pandas as pd
 
+# report: "report/workflow.rst"
 
 # -------- Config file and sample sheets --------#
 configfile: "config/config.yaml"

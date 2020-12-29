@@ -6,6 +6,8 @@ rule star_index:
          directory(out + "/star_index")
     resources:
         cores=18,
+    params:
+        job_name="star_index",
     shell:
          "mkdir {output} && "
          "STAR --runThreadN {resources.cores} " 
@@ -43,7 +45,6 @@ rule star_align:
         "--outSAMattrRGline {params.rg} "
         "--runThreadN {resources.cores} && "
         "samtools index -b -@ {resources.cores} {output.genomic}; "
-        # "samtools index -b -@ {resources.cores} {output.transcipts};"
 
 rule mark_dupes:
     input:
