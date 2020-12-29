@@ -26,6 +26,8 @@ rule rsem:
         prefix=out + "/{sample}/rsem/{lane}_{sample}_{sample_number}",
         job_name="rsem_{lane}_{sample}_{sample_number}",
         ref_prefix=out + "/rsem_index/hg38"
+    benchmark:
+        "benchmarks/{lane}_{sample}_{sample_number}.rsem.benchmark.txt",
     resources:
         cores=18,
         mem_mb=90000,

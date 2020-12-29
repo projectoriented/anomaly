@@ -6,8 +6,12 @@ rule star_index:
          directory(out + "/star_index")
     resources:
         cores=18,
+        mem_mb=90000,
+        time_min=45,
     params:
         job_name="star_index",
+    benchmark:
+        "benchmarks/star_index.benchmark.txt",
     shell:
          "mkdir {output} && "
          "STAR --runThreadN {resources.cores} " 
@@ -29,10 +33,12 @@ rule star_align:
         prefix=out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.",
         job_name="starNindex_{lane}_{sample}_{sample_number}",
         rg=get_read_group,
+    benchmark:
+        "benchmarks/{lane}_{sample}_{sample_number}.starNindex.benchmark.txt",
     resources:
         cores=18,
         mem_mb=90000,
-        time_min=480,
+        time_min=180,
     shell:
         "STAR --genomeDir {input.ref_dir} "
         "--readFilesIn {input.reads} "
@@ -55,6 +61,8 @@ rule mark_dupes:
     params:
         tmp_dir=tmp,
         job_name="mdupeNindex_{lane}_{sample}_{sample_number}",
+    benchmark:
+        "benchmarks/{lane}_{sample}_{sample_number}.mark_dupes.benchmark.txt",
     resources:
         cores=18,
         mem_mb=90000,

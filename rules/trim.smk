@@ -13,6 +13,8 @@ rule trim_galore_pe:
         script_dir=script_dir
     resources:
         cores=9,
+    benchmark:
+        "benchmarks/{lane}_{sample}_{sample_number}.trim.benchmark.txt",
     shell:
          "trim_galore "
          "--cores {resources.cores} "
