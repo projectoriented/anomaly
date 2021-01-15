@@ -13,6 +13,7 @@ samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.l
 out = config["common_out"]
 tmp = config["tmp"]
 script_dir = config["script_dir"]
+proj_dir = config["proj_dir"]
 
 
 # -------- Wildcard constraints --------#
