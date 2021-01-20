@@ -9,6 +9,7 @@ tmp: /home/mei.wu/tmp
 common_out: /home/mei.wu/rna-seq/output
 script_dir: /home/mei.wu/rna-seq/scripts
 common_fastq_dir: /home/proj/development/rare-disease/rna_data
+proj_folder: /home/mei.wu/rna-seq
 
 # -------- Configuration for alignment and feature count -------- #
 genome: /home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta # Human genome reference build, GRCh38/hg38
