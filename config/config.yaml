@@ -1,12 +1,16 @@
+# -------- Project Information -------- #
+PROJECT: null # name of project
+proj_dir: /home/mei.wu/rna-seq
+
+# -------- Input file and Global Directories -------- #
 samples: samples.tsv
-#metadata: metadata.tsv
 
 tmp: /home/mei.wu/tmp
-common_out: 
-script_dir: 
+common_out: /home/mei.wu/rna-seq/output
+script_dir: /home/mei.wu/rna-seq/scripts
+common_fastq_dir: /home/proj/development/rare-disease/rna_data
 
-# Human genome reference build, GRCh38/hg38
-genome: /home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta
+# -------- Configuration for alignment and feature count -------- #
+genome: /home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta # Human genome reference build, GRCh38/hg38
 
-# GTF file
 gtf: /home/proj/development/rare-disease/references_9.0/grch38_gencode_annotation_-v34-.gtf

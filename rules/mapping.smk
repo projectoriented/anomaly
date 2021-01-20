@@ -5,9 +5,9 @@ rule star_index:
     output:
          directory(out + "/star_index")
     resources:
-        cores=18,
-        mem_mb=90000,
-        time_min=45,
+        cores=config["cores"]["genome_index"],
+        mem=config["mem"]["genome_index"],
+        time_min=config["time_min"]["genome_index"],
     params:
         job_name="star_index",
     benchmark:
@@ -36,9 +36,9 @@ rule star_align:
     benchmark:
         "benchmarks/{lane}_{sample}_{sample_number}.starNindex.benchmark.txt",
     resources:
-        cores=18,
-        mem_mb=90000,
-        time_min=180,
+        cores=config["cores"]["mapping"],
+        mem=config["mem"]["mapping"],
+        time_min=config["time_min"]["mapping"],
     shell:
         "STAR --genomeDir {input.ref_dir} "
         "--readFilesIn {input.reads} "
@@ -64,9 +64,9 @@ rule mark_dupes:
     benchmark:
         "benchmarks/{lane}_{sample}_{sample_number}.mark_dupes.benchmark.txt",
     resources:
-        cores=18,
-        mem_mb=90000,
-        time_min=180,
+        cores=config["cores"]["mapping"],
+        mem=config["mem"]["mapping"],
+        time_min=config["time_min"]["mapping"],
     shell:
         "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) &&"
         "java -jar /home/proj/bin/conda/envs/D_rna-seq_MW/share/picard-2.22.1-0/picard.jar MarkDuplicates "

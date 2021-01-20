@@ -10,8 +10,10 @@ rule fastqc:
         job_name="fastqc_{lane}_{sample}_{sample_number}",
         capture_group="{sample}_{sample_number}",
         script_dir=script_dir,
-    conda:
-        ""
+    resources:
+        cores=config["cores"]["default"],
+        mem=config["mem"]["default"],
+        time_min=config["time_min"]["default"],
     shell:
         "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) && "
         "fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input} && "
@@ -29,5 +31,9 @@ rule multiqc:
     params:
         common_dir=out,
         job_name="multiqc",
+    resources:
+        cores=config["cores"]["default"],
+        mem=config["mem"]["default"],
+        time_min=config["time_min"]["default"],
     shell:
-         "multiqc {params.common_dir} --filename {output}"
+         "multiqc -f --dirs {params.common_dir} --filename {output}"
