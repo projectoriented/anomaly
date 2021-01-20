@@ -12,7 +12,9 @@ rule trim_galore_pe:
         capture_group="{sample}_{sample_number}",
         script_dir=script_dir
     resources:
-        cores=9,
+        cores=config["cores"]["trimming"],
+        mem=config["mem"]["trimming"],
+        time_min=config["time_min"]["trimming"],
     benchmark:
         "benchmarks/{lane}_{sample}_{sample_number}.trim.benchmark.txt",
     shell:

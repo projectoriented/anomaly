@@ -1,29 +1,31 @@
 import pandas as pd
 
-# report: "report/workflow.rst"
 
-# -------- Config file and sample sheets --------#
+# -------- Config files -------- #
 configfile: "config/config.yaml"
-
-samples = pd.read_table(config["samples"], dtype=str).set_index(["sample", "lane", "sample_number"], drop=False)
-samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+configfile: "config/cluster.yaml"
 
 
-# -------- Global variables --------#
+# -------- Global variables -------- #
 out = config["common_out"]
 tmp = config["tmp"]
 script_dir = config["script_dir"]
 proj_dir = config["proj_dir"]
 
 
-# -------- Wildcard constraints --------#
+# --------  Load sample sheet -------- #
+samples = pd.read_table(config["samples"], dtype=str).set_index(["sample", "lane", "sample_number"], drop=False)
+samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+
+
+# -------- Wildcard constraints -------- #
 wildcard_constraints:
     sample="|".join(samples["sample"]),
     lane="|".join(samples["lane"]),
     sample_number="|".join(samples["sample_number"]),
 
 
-# -------- Functions --------#
+# -------- Helper functions -------- #
 def get_fastq(wildcards):
     """Get fastq files with given wildcards."""
     return samples.loc[(wildcards.sample, wildcards.lane, wildcards.sample_number),

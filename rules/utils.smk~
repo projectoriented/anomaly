@@ -5,7 +5,9 @@ rule generate_drop_sample_annot:
         multiqc_report=out + "/multiqc_report.html",
     output:
         proj_dir + "/sample_annotation.tsv"
+    group: "post-processing"
     params:
+        common_dir=out,
         job_name="snakemake_post_processing",
     resources:
         cores=config["cores"]["default"],
