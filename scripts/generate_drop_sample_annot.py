@@ -5,20 +5,20 @@ meta = pd.read_table(snakemake.input[1], dtype=str).fillna("").set_index("sample
 
 d = {
     'RNA_ID': [],
-    'RNA_BAM_FILE': [],
-    'DNA_VCF_FILE': [],
     'DNA_ID': [],
-    'DROP_GROUP': [],
-    'PAIRED_END': ['True'],
-    'COUNT_MODE': ['IntersectionStrict'],
-    'COUNT_OVERLAPS': ['True'],
-    'STRAND': ['Reverse'],
-    'HPO_TERMS': [],
-    'GENE_COUNTS_FILE': ['No'],
-    'ANNOTATION': [],
     'TISSUE': [],
     'SEX': [],
     'PHENOTYPE': [],
+    'DROP_GROUP': [],
+    'PAIRED_END': ['True'],
+    'STRAND': ['Reverse'],
+    'COUNT_MODE': ['IntersectionStrict'],
+    'COUNT_OVERLAPS': ['True'],
+    'GENE_COUNTS_FILE': ['No'],
+    'HPO_TERMS': [],
+    'ANNOTATION': [],
+    'RNA_BAM_FILE': [],
+    'DNA_VCF_FILE': [],
 }
 
 
@@ -32,7 +32,7 @@ def remove_string_rna(base):
 
 for row in samples.itertuples(index=False):
     basename_search = f"{row.lane}_{row.sample}_{row.sample_number}"
-    abs_path = (f"/home/mei.wu/rna-seq/output/{row.sample}/picard_markdupe/{basename_search}_trim_star_marked.bam")
+    abs_path = (f"/home/mei.wu/rna-seq/output/{row.sample}/picard_markdupe/{basename_search}_trim_star_marked_alt_dropped.bam")
     d['RNA_ID'].append(basename_search)
     d['RNA_BAM_FILE'].append(abs_path)
 
