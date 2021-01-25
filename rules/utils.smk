@@ -10,7 +10,7 @@ rule remove_alt_chr_for_drop:
         job_name="{lane}_{sample}_{sample_number}_chr_alt4removal",
     resources:
         cores=config["cores"]["default"],
-        time_min=25,
+        time_min=config["time_min"]["default"],
     shell:
         """
         chr_list=$(samtools view {input} | cut -f3 | uniq | grep -E \"^.{{1,5}}$\") && 
