@@ -1,14 +1,14 @@
 include: "rules/common.smk"
-
+localrules: done,
 
 # -------- Target Rules -------- #
-rule all:
+rule done:
     params:
-        job_name="localrule-target_all",
         tmp=tmp
     input:
         out + "/star_index",
         out + "/rsem_index",
+        out + "/multiqc_report.html",
         proj_dir + "/sample_annotation.tsv",
     shell:
         "rm -rf {params.tmp}/tmp.*"
