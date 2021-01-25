@@ -6,8 +6,6 @@ rule done:
     params:
         tmp=tmp
     input:
-        out + "/star_index",
-        out + "/rsem_index",
         out + "/multiqc_report.html",
         proj_dir + "/sample_annotation.tsv",
     shell:
