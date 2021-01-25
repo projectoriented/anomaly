@@ -12,7 +12,6 @@ rule fastqc:
         script_dir=script_dir,
     resources:
         cores=config["cores"]["default"],
-        mem=config["mem"]["default"],
         time_min=config["time_min"]["default"],
     shell:
         "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) && "
@@ -33,7 +32,6 @@ rule multiqc:
         job_name="multiqc",
     resources:
         cores=config["cores"]["default"],
-        mem=config["mem"]["default"],
         time_min=config["time_min"]["default"],
     shell:
          "multiqc -f --dirs {params.common_dir} --filename {output}"
