@@ -5,7 +5,6 @@ cores:
   mapping: 18
   counting: 12
 mem:
-  default: 5G
   trimming: 20G
   genome_index: 45G
   mapping: 90G

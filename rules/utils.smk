@@ -9,13 +9,13 @@ rule remove_alt_chr_for_drop:
     params:
         job_name="{lane}_{sample}_{sample_number}_chr_alt4removal",
     resources:
-        cores=config["cores"]["default"],
-        time_min=25,
+        cores=config["cores"]["trimming"],
+        time_min=config["time_min"]["default"],
     shell:
         """
         chr_list=$(samtools view {input} | cut -f3 | uniq | grep -E \"^.{{1,5}}$\") && 
-        samtools view -b -h {input} $chr_list -o {output} && 
-        samtools index -b {output}
+        samtools view -@ {resources.cores} -b -h {input} $chr_list -o {output} && 
+        samtools index -@ {resources.cores} -b {output}
         """
 
 rule generate_drop_sample_files:
