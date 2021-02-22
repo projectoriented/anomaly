@@ -14,17 +14,21 @@ rule fastqc:
         cores=config["cores"]["default"],
         time_min=config["time_min"]["default"],
     shell:
-        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) && "
-        "fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input} && "
-        "{params.script_dir}/rename_files.sh {params.outpath} fastqc {wildcards.lane} {params.capture_group}"
+        """
+        tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) && 
+        fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input} && 
+        {params.script_dir}/rename_files.sh {params.outpath} fastqc {wildcards.lane} {params.capture_group}
+        """
+
 
 rule multiqc:
     input:
         expand([out + "/{s.sample}/fastqc/{s.lane}_{s.sample}_{s.sample_number}_1_fastqc.zip"], s=samples.itertuples()),
         expand([out + "/{s.sample}/trim-galore/{s.lane}_{s.sample}_{s.sample_number}_1.fastq.gz_trimming_report.txt"], s=samples.itertuples()),
         expand([out + "/{s.sample}/star_aln/{s.lane}_{s.sample}_{s.sample_number}_trim_star.Log.final.out"],s=samples.itertuples()),
-        expand([out + "/{s.sample}/picard_markdupe/{s.lane}_{s.sample}_{s.sample_number}_trim_star_marked.metrics.txt"], s=samples.itertuples()),
-        expand([out + "/{s.sample}/rsem/{s.lane}_{s.sample}_{s.sample_number}.stat/{s.lane}_{s.sample}_{s.sample_number}.cnt"], s=samples.itertuples()),
+        expand([out + "/{s.sample}/star_aln/{s.sample}_{s.sample_number}_trim_star.Aligned.{type}.out.bam"], s=samples.itertuples(), type=["sortedByCoord","toTranscriptome"]),
+        expand([out + "/{s.sample}/picard_markdupe/{s.sample}_{s.sample_number}_trim_star_marked.metrics.txt"], s=samples.itertuples()),
+        expand([out + "/{s.sample}/rsem/{s.sample}_{s.sample_number}.stat/{s.sample}_{s.sample_number}.cnt"], s=samples.itertuples()),
     output:
         report(out + "/multiqc_report.html", category="Quality control")
     params:

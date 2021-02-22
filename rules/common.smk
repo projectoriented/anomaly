@@ -1,7 +1,6 @@
 import pandas as pd
 
 
-
 # -------- Config files -------- #
 configfile: "config/config.yaml"
 configfile: "config/cluster.yaml"
@@ -37,6 +36,7 @@ def get_trimmed_reads(wildcards):
     return expand(out + "/{sample}/trim-galore/{lane}_{sample}_{sample_number}_val_{group}.fq.gz",
                   group=[1, 2], **wildcards)
 
+
 def get_read_group(wildcards):
     """Denote ID, LB, PL, PU, SM in read group."""
     sample=wildcards.sample
@@ -44,3 +44,19 @@ def get_read_group(wildcards):
     identifier=samples.loc[(wildcards.sample, wildcards.lane, wildcards.sample_number),"id"]
     pu=samples.loc[(wildcards.sample, wildcards.lane, wildcards.sample_number),"pu"]
     return f"ID:{identifier} LB:{sample} PL:{platform} PU:{pu} SM:{sample}"
+
+def get_sample_bams_genomic(wildcards):
+    """Get all aligned reads of a given sample"""
+    lanes = samples.loc[wildcards.sample].lane.sort_values()
+    return expand("output/{sample}/star_aln/{l}_{sample}_{sample_number}_trim_star.Aligned.sortedByCoord.out.bam",
+                    l=lanes,
+                    **wildcards
+                    )
+
+def get_sample_bams_transcript(wildcards):
+    """Get all aligned reads of a given sample"""
+    lanes = samples.loc[wildcards.sample].lane.sort_values()
+    return expand("output/{sample}/star_aln/{l}_{sample}_{sample_number}_trim_star.Aligned.toTranscriptome.out.bam",
+                    l=lanes,
+                    **wildcards
+                    )
