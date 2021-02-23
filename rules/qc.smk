@@ -25,10 +25,9 @@ rule multiqc:
     input:
         expand([out + "/{s.sample}/fastqc/{s.lane}_{s.sample}_{s.sample_number}_1_fastqc.zip"], s=samples.itertuples()),
         expand([out + "/{s.sample}/trim-galore/{s.lane}_{s.sample}_{s.sample_number}_1.fastq.gz_trimming_report.txt"], s=samples.itertuples()),
-        expand([out + "/{s.sample}/star_aln/{s.lane}_{s.sample}_{s.sample_number}_trim_star.Log.final.out"],s=samples.itertuples()),
-        expand([out + "/{s.sample}/star_aln/{s.sample}_{s.sample_number}_trim_star.Aligned.{type}.out.bam"], s=samples.itertuples(), type=["sortedByCoord","toTranscriptome"]),
-        expand([out + "/{s.sample}/picard_markdupe/{s.sample}_{s.sample_number}_trim_star_marked.metrics.txt"], s=samples.itertuples()),
-        expand([out + "/{s.sample}/rsem/{s.sample}_{s.sample_number}.stat/{s.sample}_{s.sample_number}.cnt"], s=samples.itertuples()),
+        expand([out + "/{s.sample}/star_aln/{s.sample}_trim_star.Log.final.out"],s=samples.itertuples()),
+        expand([out + "/{s.sample}/picard_markdupe/{s.sample}_trim_star_marked.metrics.txt"], s=samples.itertuples()),
+        expand([out + "/{s.sample}/rsem/{s.sample}.stat/{s.sample}.cnt"], s=samples.itertuples()),
     output:
         report(out + "/multiqc_report.html", category="Quality control")
     params:

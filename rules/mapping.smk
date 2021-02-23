@@ -23,25 +23,28 @@ rule star_index:
 
 rule star_align:
     input:
-        reads=get_trimmed_reads,
+        read1=get_trimmed_read1,
+        read2=get_trimmed_read2,
         ref_dir=out + "/star_index"
     output:
-        genomic=temp(out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.Aligned.sortedByCoord.out.bam"),
-        transcipts=temp(out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.Aligned.toTranscriptome.out.bam"),
-        log=out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.Log.final.out"
+        genomic=out + "/{sample}/star_aln/{sample}_trim_star.Aligned.sortedByCoord.out.bam",
+        transcipts=out + "/{sample}/star_aln/{sample}_trim_star.Aligned.toTranscriptome.out.bam",
+        log=out + "/{sample}/star_aln/{sample}_trim_star.Log.final.out"
     params:
-        prefix=out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.",
-        job_name="star_{lane}_{sample}_{sample_number}",
+        prefix=out + "/{sample}/star_aln/{sample}_trim_star.",
+        job_name="star_{sample}",
         rg=get_read_group,
     benchmark:
-        "benchmarks/{lane}_{sample}_{sample_number}.starNindex.benchmark.txt",
+        "benchmarks/{sample}.starNindex.benchmark.txt",
     resources:
         cores=config["cores"]["mapping"],
         mem=config["mem"]["mapping"],
         time_min=config["time_min"]["mapping"],
     shell:
+        "format1=$(echo {input.read1} | tr ' ' ',');"
+        "format2=$(echo {input.read2} | tr ' ' ',');"
         "STAR --genomeDir {input.ref_dir} "
-        "--readFilesIn {input.reads} "
+        "--readFilesIn $format1 $format2 "
         "--readFilesCommand zcat "        
         "--twopassMode Basic "
         "--quantMode TranscriptomeSAM " # for RSEM
@@ -51,40 +54,17 @@ rule star_align:
         "--outSAMattrRGline {params.rg} "
         "--runThreadN {resources.cores} "
 
-rule samtools_merge:
-    input:
-        genomic_bams=get_sample_bams_genomic,
-        transcripts_bams=get_sample_bams_transcript,
-    output:
-        genomic=out + "/{sample}/star_aln/{sample}_{sample_number}_trim_star.Aligned.sortedByCoord.out.bam",
-        transcripts=out + "/{sample}/star_aln/{sample}_{sample_number}_trim_star.Aligned.toTranscriptome.out.bam",
-    params:
-        job_name="mergeNindex_{sample}_{sample_number}",
-    benchmark:
-        "benchmarks/{sample}_{sample_number}.mergeNindex.benchmark.txt",
-    resources:
-        cores=config["cores"]["genome_index"],
-        mem=config["mem"]["genome_index"],
-        time_min=config["time_min"]["genome_index"],
-    shell:
-        """
-        samtools merge -@ {resources.cores} -cp {output.genomic} {input.genomic_bams} &&
-        samtools merge -@ {resources.cores} -cp {output.transcripts} {input.transcripts_bams} &&
-        samtools index -b -@ {resources.cores} {output.genomic} &&
-        samtools index -b -@ {resources.cores} {output.transcripts};
-        """
-
 rule mark_dupes:
     input:
-        out + "/{sample}/star_aln/{sample}_{sample_number}_trim_star.Aligned.sortedByCoord.out.bam"
+        out + "/{sample}/star_aln/{sample}_trim_star.Aligned.sortedByCoord.out.bam"
     output:
-        bam=out + "/{sample}/picard_markdupe/{sample}_{sample_number}_trim_star_marked.bam",
-        metrics=out + "/{sample}/picard_markdupe/{sample}_{sample_number}_trim_star_marked.metrics.txt"
+        bam=out + "/{sample}/picard_markdupe/{sample}_trim_star_marked.bam",
+        metrics=out + "/{sample}/picard_markdupe/{sample}_trim_star_marked.metrics.txt"
     params:
         tmp_dir=tmp,
-        job_name="mdupeNindex_{sample}_{sample_number}",
+        job_name="mdupeNindex_{sample}",
     benchmark:
-        "benchmarks/{sample}_{sample_number}.mark_dupes.benchmark.txt",
+        "benchmarks/{sample}.mark_dupes.benchmark.txt",
     resources:
         cores=config["cores"]["mapping"],
         mem=config["mem"]["mapping"],
