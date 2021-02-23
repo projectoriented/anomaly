@@ -32,7 +32,7 @@ rule star_align:
         log=out + "/{sample}/star_aln/{sample}_trim_star.Log.final.out"
     params:
         prefix=out + "/{sample}/star_aln/{sample}_trim_star.",
-        job_name="star_{sample}",
+        job_name="starNindex_{sample}",
         rg=get_read_group,
     benchmark:
         "benchmarks/{sample}.starNindex.benchmark.txt",
@@ -44,7 +44,7 @@ rule star_align:
         "format1=$(echo {input.read1} | tr ' ' ',');"
         "format2=$(echo {input.read2} | tr ' ' ',');"
         "STAR --genomeDir {input.ref_dir} "
-        "--readFilesIn $format1 $format2 "
+        "--readFilesIn ${{format1}} ${{format2}} "
         "--readFilesCommand zcat "        
         "--twopassMode Basic "
         "--quantMode TranscriptomeSAM " # for RSEM
@@ -52,7 +52,8 @@ rule star_align:
         "--outSAMtype BAM SortedByCoordinate "
         "--outFileNamePrefix {params.prefix} "
         "--outSAMattrRGline {params.rg} "
-        "--runThreadN {resources.cores} "
+        "--runThreadN {resources.cores} && "
+        "samtools index -b -@ {resources.cores} {output.genomic}; "
 
 rule mark_dupes:
     input:
@@ -70,13 +71,13 @@ rule mark_dupes:
         mem=config["mem"]["mapping"],
         time_min=config["time_min"]["mapping"],
     shell:
-        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) &&"
-        "java -jar /home/proj/bin/conda/envs/D_rna-seq_MW/share/picard-2.22.1-0/picard.jar MarkDuplicates "
-        "I={input} "
-        "O={output.bam} "
-        "M={output.metrics} "
-        "REMOVE_DUPLICATES=true "
-        "TMP_DIR=${{tmpdir}} && "
+        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) &&"        
+        "gatk MarkDuplicates "
+        "-I {input} "
+        "-O {output.bam} "
+        "-M {output.metrics} "
+        "-REMOVE_DUPLICATES true "
+        "-TMP_DIR ${{tmpdir}} && "
         "samtools index -b -@ {resources.cores} {output.bam}; "
 
 
