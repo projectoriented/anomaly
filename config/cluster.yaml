@@ -1,11 +1,11 @@
 cores:
   default: 1
-  trimming: 4
+  trimming: 5
   genome_index: 9
   mapping: 18
   counting: 12
 mem:
-  trimming: 20G
+  trimming: 36G
   genome_index: 45G
   mapping: 90G
   counting: 60G

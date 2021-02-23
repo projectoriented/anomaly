@@ -71,7 +71,7 @@ rule mark_dupes:
         mem=config["mem"]["mapping"],
         time_min=config["time_min"]["mapping"],
     shell:
-        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) &&"        
+        "tmpdir=$(mktemp --directory {params.tmp_dir}/tmp.XXXXX) && "        
         "gatk MarkDuplicates "
         "-I {input} "
         "-O {output.bam} "
