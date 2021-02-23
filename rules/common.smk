@@ -15,7 +15,6 @@ proj_dir = config["proj_dir"]
 
 # --------  Load sample sheet -------- #
 samples = pd.read_table(config["samples"], dtype=str).set_index(["sample", "lane", "sample_number"], drop=False)
-# samples = pd.read_table("/home/mei.wu/rna-seq/samples.tsv", dtype=str).set_index(["sample", "lane", "sample_number"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 samples = samples.sort_index() # increase downstream performance
 
