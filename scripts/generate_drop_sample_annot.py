@@ -1,24 +1,24 @@
 import pandas as pd
 
 samples = pd.read_table(snakemake.input[0], dtype=str)
-meta = pd.read_table(snakemake.input[1], dtype=str).fillna("").set_index("sample_id")
+meta = pd.read_table(snakemake.input[1], dtype=str).fillna("").set_index("sample_id") # this file is manually created from rna samples sheets doc
 
 d = {
     'RNA_ID': [],
+    'RNA_BAM_FILE': [],
+    'DNA_VCF_FILE': [],
     'DNA_ID': [],
-    'TISSUE': [],
-    'SEX': [],
-    'PHENOTYPE': [],
     'DROP_GROUP': [],
     'PAIRED_END': ['True'],
     'STRAND': ['Reverse'],
     'COUNT_MODE': ['IntersectionStrict'],
     'COUNT_OVERLAPS': ['True'],
-    'GENE_COUNTS_FILE': ['No'],
     'HPO_TERMS': [],
+    'GENE_COUNTS_FILE': ['No'],
     'ANNOTATION': [],
-    'RNA_BAM_FILE': [],
-    'DNA_VCF_FILE': [],
+    # 'TISSUE': [],
+    'SEX': [],
+    'PHENOTYPE': [],
 }
 
 
@@ -31,9 +31,8 @@ def remove_string_rna(base):
 
 
 for row in samples.itertuples(index=False):
-    basename_search = f"{row.lane}_{row.sample}_{row.sample_number}"
-    abs_path = (f"/home/mei.wu/rna-seq/output/{row.sample}/picard_markdupe/{basename_search}_trim_star_marked_alt_dropped.bam")
-    d['RNA_ID'].append(basename_search)
+    abs_path = (f"/home/mei.wu/rna-seq/drop_files/{row.sample}/{row.sample}_trim_star_marked_no_alt.bam")
+    d['RNA_ID'].append(row.sample)
     d['RNA_BAM_FILE'].append(abs_path)
 
     modified = remove_string_rna(row.sample)
@@ -54,12 +53,12 @@ for row in samples.itertuples(index=False):
 
     d['DNA_VCF_FILE'].append(vcf_path)
 
-    d['TISSUE'].append('Fibroblast') if row.sample == '164-I-2A' or row.sample == '90-I-1A' or '15001' in row.sample else d['TISSUE'].append(
+    d['DROP_GROUP'].append('Fibroblast') if row.sample == '164-I-2A' or row.sample == '90-I-1A' or '15001' in row.sample else d['DROP_GROUP'].append(
         'Blood')
     d['SEX'].append('FEMALE') if '2' in modified[-2:] else d['SEX'].append('MALE')
     d['PHENOTYPE'].append('UNAFFECTED') if 'U' in modified[-2:] else d['PHENOTYPE'].append('AFFECTED')
 
-d['DROP_GROUP'] = d['TISSUE']
+# d['DROP_GROUP'] = d['TISSUE']
 
 repeat_num = 0
 for key, value in d.items():
