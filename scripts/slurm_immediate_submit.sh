@@ -7,6 +7,6 @@
 if [[ "Submitted batch job" =~ "$@" ]]; then
   echo -n ""
 else
-  deplist=$(grep -Eo '[0-9]{1,10}' <<< "$@" | tr '\n' ',' | sed 's/.$//')
+  deplist=$(grep -Eo "\<[0-9]{6}\>" <<< "$@" | uniq | tr '\n' ',' | sed 's/.$//')
   echo -n "--dependency=afterany:$deplist"
 fi;
