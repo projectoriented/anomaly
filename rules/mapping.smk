@@ -54,6 +54,7 @@ rule star_align:
         "--outSAMattrRGline {params.rg} "
         "--runThreadN {resources.cores} && "
         "samtools index -b -@ {resources.cores} {output.genomic}; "
+        "rm -rf {params.prefix}_STAR*;"
 
 rule mark_dupes:
     input:

@@ -11,7 +11,7 @@ mem:
   counting: 60G
 time_min:
   default: 60
-  trimming: 120
+  trimming: 200
   genome_index: 180
   mapping: 420
-  counting: 260
+  counting: 300
