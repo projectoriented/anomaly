@@ -1,4 +1,4 @@
-# localrules: generate_drop_sample_files,
+localrules: generate_drop_sample_files,
 
 rule remove_alt_chr_for_drop:
     input:
@@ -17,13 +17,11 @@ rule remove_alt_chr_for_drop:
         samtools index -@ {resources.cores} -b {output}
         """
 
-# rule generate_drop_sample_files:
-#     input:
-#         sample_tsv=proj_dir + "/samples.tsv",
-#         rna_meta_tsv=proj_dir + "/rna_meta.tsv",
-#         fexist=expand([proj_dir + "/drop_files/{s.sample}/{s.sample}_trim_star_marked_no_alt.bam"], s=samples.itertuples()),
-#     output:
-#         proj_dir + "/sample_annotation.tsv",
-#     script:
-#         "../scripts/generate_drop_sample_annot.py"
-
+rule generate_drop_sample_files:
+    input:
+        rna_meta_tsv=proj_dir + "/merged_rna_meta.txt2",
+        fexist=expand([proj_dir + "/drop_files/{s.sample}/{s.sample}_trim_star_marked_no_alt.bam"], s=samples.itertuples()),
+    output:
+        proj_dir + "/sample_annotation.tsv",
+    script:
+        "../scripts/generate_drop_sample_annot.py"
