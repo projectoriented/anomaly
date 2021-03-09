@@ -21,15 +21,15 @@ rule rsem_index:
 rule rsem:
     input:
         index=out + "/rsem_index",
-        star_aln=out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.Aligned.toTranscriptome.out.bam",
+        star_aln=out + "/{sample}/star_aln/{sample}_trim_star.Aligned.toTranscriptome.out.bam",
     output:
-        report(out + "/{sample}/rsem/{lane}_{sample}_{sample_number}.stat/{lane}_{sample}_{sample_number}.cnt")
+        report(out + "/{sample}/rsem/{sample}.stat/{sample}.cnt")
     params:
-        prefix=out + "/{sample}/rsem/{lane}_{sample}_{sample_number}",
-        job_name="rsem_{lane}_{sample}_{sample_number}",
+        prefix=out + "/{sample}/rsem/{sample}",
+        job_name="rsem_{sample}",
         ref_prefix=out + "/rsem_index/hg38"
     benchmark:
-        "benchmarks/{lane}_{sample}_{sample_number}.rsem.benchmark.txt",
+        "benchmarks/{sample}.rsem.benchmark.txt",
     resources:
         cores=config["cores"]["counting"],
         mem=config["mem"]["counting"],

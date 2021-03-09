@@ -10,6 +10,7 @@ rule done:
         proj_dir + "/sample_annotation.tsv",
     shell:
         "rm -rf {params.tmp}/tmp.*"
+        "rm -rf ~/slurm/logs/*"
 
 
 # -------- Setup Singularity -------- #
