@@ -3,14 +3,16 @@ localrules: done,
 
 # -------- Target Rules -------- #
 rule done:
-    params:
-        tmp=tmp
     input:
         out + "/multiqc_report.html",
         proj_dir + "/sample_annotation.tsv",
+    params:
+        tmp=tmp,
     shell:
-        "rm -rf {params.tmp}/tmp.*"
-        "rm -rf ~/slurm/logs/*"
+        """        
+        rm -rf ~/slurm/logs/*;         
+        find {params.tmp} -mindepth 1 -name tmp* -exec rm -r {{}} +;        
+        """
 
 
 # -------- Setup Singularity -------- #
