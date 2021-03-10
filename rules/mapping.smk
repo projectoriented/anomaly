@@ -53,8 +53,8 @@ rule star_align:
         "--outFileNamePrefix {params.prefix} "
         "--outSAMattrRGline {params.rg} "
         "--runThreadN {resources.cores} && "
-        "samtools index -b -@ {resources.cores} {output.genomic}; "
-        "rm -rf {params.prefix}_STAR*;"
+        "samtools index -b -@ {resources.cores} {output.genomic} && "
+        "rm -rf {params.prefix}_STAR* ;"
 
 rule mark_dupes:
     input:
@@ -80,6 +80,3 @@ rule mark_dupes:
         "-REMOVE_DUPLICATES true "
         "-TMP_DIR ${{tmpdir}} && "
         "samtools index -b -@ {resources.cores} {output.bam}; "
-
-
-
