@@ -5,34 +5,40 @@ rule rsem_index:
     output:
          directory(out + "/rsem_index")
     resources:
-        cores=9,
+        cores=config["cores"]["genome_index"],
+        mem=config["mem"]["genome_index"],
+        time_min=config["time_min"]["genome_index"],
     params:
-        job_name = "rsem_index_hg38",
-        prefix = out + "/rsem_index/hg38"
+        job_name="rsem_index_hg38",
+        prefix=out + "/rsem_index/hg38"
     shell:
-        'rsem-prepare-reference --num-threads {resources.cores} '
-        '--gtf {input.gtf} '
-        '{input.fa} '
-        '{params.prefix}'
+        "mkdir {output} && "
+        "rsem-prepare-reference --num-threads {resources.cores} " 
+        "--gtf {input.gtf} "
+        "{input.fa} "
+        "{params.prefix}"
 
 rule rsem:
     input:
-        star_aln=out + "/{sample}/star_aln/{lane}_{sample}_{sample_number}_trim_star.Aligned.toTranscriptome.out.bam",
-        ref_dir=out + "/rsem_index"
+        index=out + "/rsem_index",
+        star_aln=out + "/{sample}/star_aln/{sample}_trim_star.Aligned.toTranscriptome.out.bam",
     output:
-        out + "/{sample}/rsem/{lane}_{sample}_{sample_number}.stat/{lane}_{sample}_{sample_number}.cnt",
+        report(out + "/{sample}/rsem/{sample}.stat/{sample}.cnt")
     params:
-        prefix=out + "/{sample}/rsem/{lane}_{sample}_{sample_number}",
-        job_name="rsem_{lane}_{sample}_{sample_number}",
+        prefix=out + "/{sample}/rsem/{sample}",
+        job_name="rsem_{sample}",
         ref_prefix=out + "/rsem_index/hg38"
+    benchmark:
+        "benchmarks/{sample}.rsem.benchmark.txt",
     resources:
-        cores=18,
-        mem_mb=90000,
-        time_min=480,
+        cores=config["cores"]["counting"],
+        mem=config["mem"]["counting"],
+        time_min=config["time_min"]["counting"],
     shell:
         "rsem-calculate-expression "
         "--paired-end "
         "--bam "
+        "--no-bam-output "
         "--num-threads {resources.cores} "        
         "{input.star_aln} "
         "{params.ref_prefix} "

@@ -37,4 +37,4 @@ rule multiqc:
         cores=config["cores"]["default"],
         time_min=config["time_min"]["default"],
     shell:
-         "multiqc -f -d -dd 1 {params.common_dir} --filename {output} --ignore */fastqc "
+         "multiqc -f {params.common_dir} --filename {output} --ignore */fastqc --ignore */trim-galore "
