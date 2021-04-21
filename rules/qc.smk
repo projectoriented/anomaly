@@ -29,12 +29,20 @@ rule multiqc:
         expand([out + "/{s.sample}/picard_markdupe/{s.sample}_trim_star_marked.metrics.txt"], s=samples.itertuples()),
         expand([out + "/{s.sample}/rsem/{s.sample}.stat/{s.sample}.cnt"], s=samples.itertuples()),
     output:
-        report(out + "/multiqc_report.html", category="Quality control")
+        report(
+            out + "/multiqc_report.html",
+            category="Quality control",
+        ),
     params:
         common_dir=out,
+        multiqc_config=proj_dir + "/config/multiqc_config.yaml",
         job_name="multiqc",
     resources:
         cores=config["cores"]["default"],
         time_min=config["time_min"]["default"],
     shell:
+<<<<<<< HEAD
          "multiqc -f {params.common_dir} --filename {output} --ignore */fastqc --ignore */trim-galore "
+=======
+         "multiqc -f {params.common_dir} --filename {output} --config {params.multiqc_config}"
+>>>>>>> test/rules
