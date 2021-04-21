@@ -30,6 +30,6 @@ rule generate_drop_config:
     input:
         proj_dir + "/sample_annotation.tsv",
     output:
-        proj_dir + "/drop" # need to fix this
+        proj_dir + "/drop/config.yaml"
     script:
         "../scripts/modify_drop_config.py"
