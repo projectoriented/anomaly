@@ -25,3 +25,11 @@ rule generate_drop_sample_files:
         proj_dir + "/sample_annotation.tsv",
     script:
         "../scripts/generate_drop_sample_annot.py"
+
+rule generate_drop_config:
+    input:
+        proj_dir + "/sample_annotation.tsv",
+    output:
+        proj_dir + "/drop/config.yaml"
+    script:
+        "../scripts/modify_drop_config.py"
