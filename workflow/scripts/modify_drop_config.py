@@ -10,8 +10,8 @@ cnt_dupes = sample_annot.pivot_table(index=['DROP_GROUP'], aggfunc='size').ge(30
 
 drop_config = {
     'projectTitle': snakemake.config['proj_title'],
-    'root': snakemake.config['root'],
-    'htmlOutputPath': snakemake.config['htmlOutputPath'],
+    'root': f"{snakemake.config['drop_proj']}/output",
+    'htmlOutputPath': f"{snakemake.config['drop_proj']}/output/html",
     'indexWithFolderName': True,
     'hpoFile': None,
     'sampleAnnotation': snakemake.input[0],
