@@ -1,0 +1,5 @@
+# match the sample name from file. this is to aggregate spread out flowcell samples into one on the html page
+
+extra_fn_clean_exts:
+ - type: regex_keep
+   pattern: "[A|E][A-Z0-9]{8}|([0-9]+-[I]+-[0-9A-Z]+)"

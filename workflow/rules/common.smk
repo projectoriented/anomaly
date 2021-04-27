@@ -1,16 +1,12 @@
 import pandas as pd
 
 
-# -------- Config files -------- #
-configfile: "config/config.yaml"
-configfile: "config/cluster.yaml"
-
-
 # -------- Global variables -------- #
 out = config["common_out"]
 tmp = config["tmp"]
 script_dir = config["script_dir"]
 proj_dir = config["proj_dir"]
+drop_proj = config["drop_proj"]
 
 
 # --------  Load sample sheet -------- #

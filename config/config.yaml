@@ -1,16 +1,20 @@
 # -------- Project Information -------- #
-PROJECT: null # name of project
-proj_dir: /home/mei.wu/rna-seq
+proj_title: "rna-seq pipeline to detect anomalies in transcriptome with anomaly and DROP" # name of project
+proj_dir: "/home/mei.wu/rna-seq"
 
-# -------- Input file and Global Directories -------- #
-samples: samples.tsv
+# -------- Global Directories -------- #
+tmp: "/home/mei.wu/tmp"
+common_out: "/home/mei.wu/rna-seq/output"
+script_dir: "/home/mei.wu/rna-seq/workflow/scripts"
 
-tmp: /home/mei.wu/tmp
-common_out: /home/mei.wu/rna-seq/output
-script_dir: /home/mei.wu/rna-seq/scripts
-common_fastq_dir: /home/proj/development/rare-disease/rna_data
+# -------- Input file -------- #
+samples: "config/samples.tsv"
+rna_meta: "config/merged_rna_meta.tsv" # generated from RNA samples sheet and used to make DROP's sample annotation
 
 # -------- Configuration for alignment and feature count -------- #
-genome: /home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta # Human genome reference build, GRCh38/hg38
+genome: "/home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta" # Human genome reference build, GRCh38/hg38
 
-gtf: /home/proj/development/rare-disease/references_9.0/grch38_gencode_annotation_-v34-.gtf
+gtf: "/home/proj/development/rare-disease/references_9.0/grch38_gencode_annotation_-v34-.gtf"
+
+# -------- DROP (Detection of RNA Outlier Pipeline) related configurations -------- #
+drop_proj: "/home/mei.wu/drop/compact-rna_v1"

@@ -2,7 +2,7 @@ from os import walk, path
 from sys import argv
 
 """
-This python script takes 1 argument from the command-line which is the common directory of all Fastq files. 
+This python script takes 1 argument from the command-line which is the absolute common path to all Fastq files. 
 The output is a tabular file of sample names, lane, ILLUMINA sample number, ID, platform, PU, path of fq1, and fq2. 
 """
 def get_fastq_path(common_dir):
@@ -20,11 +20,11 @@ def tabulate_data(files):
 
     samples = [f"sample\tlane\tsample_number\tid\tplatform\tpu\tfq1\tfq2"]
     for i in range(len(fq1)):
-        sample_id = path.basename(fq1[i]).split("_")[3]
         lane = path.basename(fq1[i])[0]
-        sample_num = path.basename(fq1[i]).split("_")[4]
-        h_identifier = path.basename(fq1[i]).split("_")[2]
         num_identifier = path.basename(fq1[i]).split("_")[1]
+        h_identifier = path.basename(fq1[i]).split("_")[2]
+        sample_id = path.basename(fq1[i]).split("_")[3]
+        sample_num = path.basename(fq1[i]).split("_")[4]
         pu = f"{h_identifier}.{lane}.{sample_num}"
         platform = "ILLUMINA"
         id = f"{sample_id}_{num_identifier}_{h_identifier}_{sample_num}_lane{lane}"
