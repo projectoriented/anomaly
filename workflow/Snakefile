@@ -1,0 +1,35 @@
+localrules: done,
+
+report: "report/workflow.rst"
+
+
+# -------- Config files -------- #
+configfile: "config/config.yaml"
+configfile: "config/cluster.yaml"
+
+
+# -------- Container -------- #
+# Fix underlying OS via Singularity
+container: "docker://lettucerap/anomaly:latest"
+
+
+# -------- Load Rules -------- #
+include: "rules/common.smk"
+include: "rules/qc.smk"
+include: "rules/trim.smk"
+include: "rules/mapping.smk"
+include: "rules/counting.smk"
+include: "rules/utils.smk"
+
+# -------- Target Rules -------- #
+rule done:
+    input:
+        out + "/multiqc_report.html",
+        drop_proj + "/config.yaml",
+    params:
+        tmp=tmp,
+    shell:
+        """
+        rm -rf ~/slurm/logs/*;
+        find {params.tmp} -mindepth 1 -name tmp* -exec rm -r {{}} +;
+        """

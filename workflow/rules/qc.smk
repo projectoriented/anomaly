@@ -11,7 +11,7 @@ rule fastqc:
         job_name="fastqc_{sample}_{pu}",
         script_dir=script_dir,
     resources:
-        cores=config["cores"]["default"],
+        threads=config["cores"]["default"],
         time_min=config["time_min"]["default"],
     shell:
         """
@@ -19,7 +19,6 @@ rule fastqc:
         fastqc --noextract --dir ${{tmpdir}} --outdir {params.outpath} {input} && 
         {params.script_dir}/rename_files.sh {params.outpath} fastqc {params.reg}
         """
-
 
 rule multiqc:
     input:
@@ -29,12 +28,17 @@ rule multiqc:
         expand([out + "/{s.sample}/picard_markdupe/{s.sample}_trim_star_marked.metrics.txt"], s=samples.itertuples()),
         expand([out + "/{s.sample}/rsem/{s.sample}.stat/{s.sample}.cnt"], s=samples.itertuples()),
     output:
-        report(out + "/multiqc_report.html", category="Quality control")
+        report(
+            out + "/multiqc_report.html",
+            caption="../report/multiqc.rst",
+            category="Quality control",
+        ),
     params:
         common_dir=out,
+        multiqc_config=proj_dir + "/config/multiqc_config.yaml",
         job_name="multiqc",
     resources:
-        cores=config["cores"]["default"],
+        threads=config["cores"]["default"],
         time_min=config["time_min"]["default"],
     shell:
-         "multiqc -f {params.common_dir} --filename {output} --ignore */fastqc --ignore */trim-galore "
+         "multiqc -f {params.common_dir} --filename {output} --config {params.multiqc_config}"

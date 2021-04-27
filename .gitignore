@@ -1,1 +1,2 @@
-data/
+config/*.tsv
+workflow/scripts/filehandler.py
