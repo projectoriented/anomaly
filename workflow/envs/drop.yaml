@@ -2,4 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - drop =1.0.3
+  - drop >=1.0.3
