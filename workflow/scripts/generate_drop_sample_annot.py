@@ -1,7 +1,15 @@
 import pandas as pd
 
 # this file is manually created from rna samples sheets doc
-meta = pd.read_table(snakemake.input[0], dtype=str).fillna("")
+meta = pd.read_table(snakemake.input['rna_meta_tsv'], dtype=str).fillna("")
+bam_paths = snakemake.input['fexist']
+
+
+def get_path(rna_id):
+    for path in bam_paths:
+        if rna_id in path:
+            return path
+
 
 d = {
     'RNA_ID': [],
@@ -21,10 +29,8 @@ d = {
     'PHENOTYPE': [],
 }
 
-
 for row in meta.itertuples(index=False):
-
-    rna_path = (f"/home/mei.wu/rna-seq/drop_files/{row.rna_id}/{row.rna_id}_trim_star_marked_no_alt.bam")
+    rna_path = get_path(row.rna_id)
     d['RNA_BAM_FILE'].append(rna_path)
 
     d['RNA_ID'].append(row.rna_id)
@@ -37,7 +43,6 @@ for row in meta.itertuples(index=False):
     # specify drop groups by tissue
     d['DROP_GROUP'].append(row.tissue)
 
-
 # padding the table to make it into a pandas object.
 repeat_num = 0
 for key, value in d.items():
@@ -48,7 +53,6 @@ for key, value in d.items():
         d[key] = value * repeat_num
     else:
         d[key] = [''] * repeat_num
-
 
 # load dictionary into pandas object
 df = pd.DataFrame(data=d)
