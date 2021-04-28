@@ -5,7 +5,7 @@ rule rsem_index:
     output:
          directory(out + "/rsem_index")
     resources:
-        threads=config["cores"]["genome_index"],
+        cores=config["cores"]["genome_index"],
         mem=config["mem"]["genome_index"],
         time_min=config["time_min"]["genome_index"],
     params:
@@ -31,7 +31,7 @@ rule rsem:
     benchmark:
         "benchmarks/{sample}.rsem.benchmark.txt",
     resources:
-        threads=config["cores"]["counting"],
+        cores=config["cores"]["counting"],
         mem=config["mem"]["counting"],
         time_min=config["time_min"]["counting"],
     shell:
