@@ -9,7 +9,7 @@ cnt_dupes = sample_annot.pivot_table(index=['DROP_GROUP'], aggfunc='size').ge(30
 
 
 drop_config = {
-    'projectTitle': snakemake.config['proj_title'],
+    'projectTitle': f'"{snakemake.config["proj_title"]}"',
     'root': f"{snakemake.config['drop_proj']}/output",
     'htmlOutputPath': f"{snakemake.config['drop_proj']}/output/html",
     'indexWithFolderName': True,
@@ -44,15 +44,15 @@ drop_config = {
         },
     'mae':
         {
-            'groups': None,
-            'genome': None,
+            'groups': cnt_dupes[cnt_dupes].index.tolist(),
+            'genome': snakemake.config['genome'],
             'gatkIgnoreHeaderCheck': True,
             'padjCutoff': 0.05,
             'allelicRatioCutoff': 0.8,
             'addAF': False,
             'maxAF': 0.001,
             'maxVarFreqCohort': 0.05,
-            'qcVcf': None,
+            'qcVcf': snakemake.config['qcVCF'],
             'qcGroups': 'mae'
         },
     'tools':
