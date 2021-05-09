@@ -37,7 +37,7 @@ do
   samtools view -h -s .20 -@ 4 "$sample"_sliced-"$gene".bam -o "$sample"_sliced-"$gene"_d20.bam # subsample, d20 = down sampled to 20%
 done
 
-echo "now splicing out query_"*.gtf "from $bam"
+echo "now splicing out ${genes[*]} from $bam"
 bedtools intersect -v -a "$bam" -b query_*.gtf > "$sample"_dropped3.bam # splice out the 3 genes from original bam
-echo "now merging them"
-samtools merge -c -p -@ 4 "$sample"_concat.bam "$sample"_sliced-*_d20.bam "$sample"_dropped2.bam
+echo "now stitching the down sampled genes into " "$sample"_dropped3.bam
+samtools merge -c -p -@ 4 "$sample"_concat.bam "$sample"_sliced-*_d20.bam "$sample"_dropped3.bam
