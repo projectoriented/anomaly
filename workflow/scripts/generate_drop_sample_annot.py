@@ -1,4 +1,5 @@
 import pandas as pd
+from glob import glob
 
 # this file is manually created from rna samples sheets doc
 meta = pd.read_table(snakemake.input['rna_meta_tsv'], dtype=str).fillna("")
@@ -9,6 +10,14 @@ def get_path(rna_id):
     for path in bam_paths:
         if rna_id in path:
             return path
+
+
+def get_dna_vcf(dna_case):
+    if dna_case and not dna_case.isspace():
+        vcf_path = glob(f"/home/proj/development/rare-disease/rna_data/*/dna_vcf/{dna_case}*.gz")
+    else:
+        vcf_path = ''
+    return ''.join(vcf_path)
 
 
 d = {
@@ -23,7 +32,9 @@ d = {
     'STRAND': [],
     'HPO_TERMS': [],
     'GENE_COUNTS_FILE': ['No'],
-    'ANNOTATION': [],
+    'GENE_ANNOTATION': [],
+    'SPLIT_COUNTS_FILE': [],
+    'NON_SPLIT_COUNTS_FILE': [],
     'TISSUE': [],
     'GENDER': [],
     'PHENOTYPE': [],
@@ -32,8 +43,12 @@ d = {
 for row in meta.itertuples(index=False):
     rna_path = get_path(row.rna_id)
     d['RNA_BAM_FILE'].append(rna_path)
-
     d['RNA_ID'].append(row.rna_id)
+
+    vcf_path = get_dna_vcf(row.dna_case)
+    d['DNA_VCF_FILE'].append(vcf_path)
+    d['DNA_ID'].append(row.dna_id)
+
     d['PAIRED_END'].append(row.paired_end)
     d['STRAND'].append(row.strand)
     d['PHENOTYPE'].append(row.phenotype)
