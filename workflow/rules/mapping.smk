@@ -5,7 +5,7 @@ rule star_index:
     output:
          directory(out + "/star_index")
     resources:
-        threads=config["cores"]["genome_index"],
+        cores=config["cores"]["genome_index"],
         mem=config["mem"]["genome_index"],
         time_min=config["time_min"]["genome_index"],
     params:
@@ -37,7 +37,7 @@ rule star_align:
     benchmark:
         "benchmarks/{sample}.starNindex.benchmark.txt",
     resources:
-        threads=config["cores"]["mapping"],
+        cores=config["cores"]["mapping"],
         mem=config["mem"]["mapping"],
         time_min=config["time_min"]["mapping"],
     shell:
@@ -68,7 +68,7 @@ rule mark_dupes:
     benchmark:
         "benchmarks/{sample}.mark_dupes.benchmark.txt",
     resources:
-        threads=config["cores"]["mapping"],
+        cores=config["cores"]["mapping"],
         mem=config["mem"]["mapping"],
         time_min=config["time_min"]["mapping"],
     shell:

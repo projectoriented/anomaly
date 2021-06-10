@@ -1,5 +1,4 @@
-localrules: done,
-
+localrules: done
 report: "report/workflow.rst"
 
 
@@ -10,7 +9,7 @@ configfile: "config/cluster.yaml"
 
 # -------- Container -------- #
 # Fix underlying OS via Singularity
-container: "docker://lettucerap/anomaly:latest"
+#container: "docker://lettucerap/anomaly:latest" # other than default, an image can be built from dockerfile in the repo so there's no need to pull from the hub
 
 
 # -------- Load Rules -------- #
@@ -19,13 +18,14 @@ include: "rules/qc.smk"
 include: "rules/trim.smk"
 include: "rules/mapping.smk"
 include: "rules/counting.smk"
-include: "rules/utils.smk"
+include: "rules/drop.smk"
 
 # -------- Target Rules -------- #
 rule done:
     input:
         out + "/multiqc_report.html",
         drop_proj + "/config.yaml",
+        #drop_proj + "/output/html/AberrantSplicing/blood--v34_summary.html",
     params:
         tmp=tmp,
     shell:
