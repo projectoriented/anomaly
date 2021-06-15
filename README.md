@@ -18,6 +18,9 @@ anomaly is a pipeline that uses Snakemake as its workflow manager for modularity
     ```
     * If dry-run looks good, proceed with:
     ```
-    snakemake --profile slurm --jobs [put # here] --use-singularity --singularity-args "--bind [paths that lives outside the container] --fakeroot"
+    snakemake --profile slurm \
+      --jobs [put # here] --use-singularity \
+      --singularity-args "--bind [paths that lives outside the container delimited by comma] \
+      --fakeroot"
     ```
      A slurm profile located in `~/.config/snakemake/slurm/config.yaml` is required for the `--profile` option. I'd recommend doing this on a separate screen using `screen -S rna_analysis` but otherwise `--immediate-submit --notemp --scheduler greedy` options can be added and use the slurm bash script.
