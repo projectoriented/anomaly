@@ -8,9 +8,8 @@ configfile: "config/cluster.yaml"
 
 
 # -------- Container -------- #
-# Fix underlying OS via Singularity
-#container: "docker://lettucerap/anomaly:latest" # other than default, an image can be built from dockerfile in the repo so there's no need to pull from the hub
-singularity: "anomaly.sif"
+#container: "docker://lettucerap/anomaly:latest" # hosted image
+singularity: "anomaly.sif" # using singularity instead
 
 # -------- Load Rules -------- #
 include: "rules/common.smk"
@@ -24,8 +23,8 @@ include: "rules/drop.smk"
 rule done:
     input:
         out + "/multiqc_report.html",
-        drop_proj + "/config.yaml",
-        drop_proj + "/output/html/AberrantSplicing/blood--v34_summary.html"
+        drop_proj + "/output/html/AberrantSplicing/blood--v34_summary.html",
+        drop_proj + "/output/html/AberrantExpression/Outrider/v34/Summary_blood.html"
     params:
         tmp=tmp,
     shell:
