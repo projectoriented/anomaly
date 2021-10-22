@@ -12,9 +12,9 @@ samples: "config/samples.tsv"
 rna_meta: "config/merged_rna_meta.tsv" # generated from RNA samples sheet and used to make DROP's sample annotation
 
 # -------- Configuration for alignment and feature count -------- #
-genome: "/home/proj/development/rare-disease/references_9.0/grch38_homo_sapiens_-assembly-.fasta" # Human genome reference build, GRCh38/hg38
+genome: "/path/to/grch38_homo_sapiens_-assembly-.fasta" # Human genome reference build, GRCh38/hg38
 
-gtf: "/home/proj/development/rare-disease/references_9.0/grch38_gencode_annotation_-v34-.gtf"
+gtf: "/path/to/grch38_gencode_annotation_-v34-.gtf"
 
 # -------- DROP (Detection of RNA Outlier Pipeline) related configurations -------- #
 drop_proj: "/home/mei.wu/drop/compact-rna_v1"
